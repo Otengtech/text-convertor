@@ -4,11 +4,11 @@ import { AnimatePresence } from 'framer-motion';
 import Navbar from './components/Layout/Navbar';
 import Hero from './components/Hero';
 import About from './components/About';
-import Features from './components/Features';
 import HowItWorks from './components/HowItWorks';
 import Scanner from './components/Scanner';
 import Footer from './components/Footer';
 import Loading from './components/Layout/Loading';
+import OtherTools from './components//OtherTools';
 
 function App() {
   const [isLoading, setIsLoading] = useState(false);
@@ -22,10 +22,10 @@ function App() {
       <div className={`${isLoading ? 'hidden' : 'block'}`}>
         <Navbar />
         <Hero />
+        <About />
         <HowItWorks />
         <Scanner />
-        <Features />
-        <About />
+        <OtherTools />
         <Footer />
       </div>
     </div>

@@ -74,7 +74,7 @@ const HowItWorksAlt = () => {
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.5 }}
           viewport={{ once: true }}
           className="text-center mb-16"
         >
@@ -107,7 +107,7 @@ const HowItWorksAlt = () => {
                 key={step.title}
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.15 }}
+                transition={{ duration: 0.4, delay: index * 0.15 }}
                 viewport={{ once: true }}
                 className="relative"
               >

@@ -1,36 +1,69 @@
 // components/Footer.jsx
-import React from 'react';
-import { motion } from 'framer-motion';
-import { FaFileAlt, FaTwitter, FaGithub, FaLinkedin, FaHeart } from 'react-icons/fa';
+import React from "react";
+import { motion } from "framer-motion";
+import { FaFileAlt, FaTwitter, FaGithub, FaLinkedin } from "react-icons/fa";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
+  // Data for social links
+  const socialLinks = [
+    { Icon: FaTwitter, href: "#", label: "Twitter" },
+    { Icon: FaGithub, href: "#", label: "GitHub" },
+    { Icon: FaLinkedin, href: "#", label: "LinkedIn" },
+  ];
+
+  // Data for quick links
+  const quickLinks = ["Home", "About", "Scanner", "OtherTools"];
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
+
   return (
     <footer className="bg-black/90 border-t border-gold/50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-20 py-12">
-        <div className="flex md:flex-col items-center justify-between space-x-10">
-          {/* Brand */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="col-span-1"
-          >
-            <div className="flex items-center space-x-2 mb-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Main Footer Content */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12"
+        >
+          {/* Brand Section */}
+          <motion.div variants={itemVariants} className="lg:col-span-2">
+            <div className="flex items-center space-x-3 mb-4">
               <FaFileAlt className="text-gold text-2xl" />
               <span className="text-white font-bold text-xl">DocScan Pro</span>
             </div>
-            <p className="text-gray-200 mb-4">
-              Advanced document scanning and text extraction powered by AI technology.
+
+            <p className="text-gray-200 mb-6 leading-relaxed">
+              Advanced document scanning and text extraction powered by AI
+              technology.
             </p>
+
             <div className="flex space-x-4">
-              {[FaTwitter, FaGithub, FaLinkedin].map((Icon, index) => (
+              {socialLinks.map(({ Icon, href, label }, index) => (
                 <motion.a
-                  key={index}
-                  href="#"
+                  key={label}
+                  href={href}
+                  aria-label={label}
                   whileHover={{ scale: 1.2, y: -2 }}
-                  className="text-gray-200 hover:text-gold transition-colors"
+                  whileTap={{ scale: 0.95 }}
+                  className="text-gray-200 hover:text-gold transition-colors duration-200 p-2 rounded-lg hover:bg-white/5"
                 >
                   <Icon size={20} />
                 </motion.a>
@@ -38,18 +71,19 @@ const Footer = () => {
             </div>
           </motion.div>
 
-          {/* Quick Links */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            viewport={{ once: true }}
-          >
-            <h3 className="text-white font-bold mb-4">Quick Links</h3>
-            <ul className="space-y-2">
-              {['Home', 'About', 'Features', 'Scanner'].map((item) => (
+          {/* Quick Links Section */}
+          <motion.div variants={itemVariants}>
+            <h3 className="text-white font-semibold mb-6 text-lg">
+              Quick Links
+            </h3>
+
+            <ul className="space-y-3">
+              {quickLinks.map((item) => (
                 <li key={item}>
-                  <a href={`#${item.toLowerCase()}`} className="text-gray-200 hover:text-gold transition-colors">
+                  <a
+                    href={`#${item.toLowerCase()}`}
+                    className="text-gray-200 hover:text-gold transition-colors duration-200 block py-1 hover:translate-x-1 transform"
+                  >
                     {item}
                   </a>
                 </li>
@@ -57,40 +91,27 @@ const Footer = () => {
             </ul>
           </motion.div>
 
-          {/* Resources */}
-          {/* <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            viewport={{ once: true }}
-          >
-            <h3 className="text-white font-bold mb-4">Resources</h3>
-            <ul className="space-y-2">
-              {['Documentation', 'API', 'Support', 'Privacy Policy'].map((item) => (
-                <li key={item}>
-                  <a href="#" className="text-gray-400 hover:text-gold transition-colors">
-                    {item}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </motion.div> */}
+          {/* Contact Section - Commented out but structured for easy enablement */}
 
-          {/* Contact */}
-          {/* <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            viewport={{ once: true }}
-          >
-            <h3 className="text-white font-bold mb-4">Contact</h3>
-            <ul className="space-y-2 text-gray-400">
-              <li>hello@docscanpro.com</li>
-              <li>+1 (555) 123-4567</li>
-              <li>San Francisco, CA</li>
+          <motion.div variants={itemVariants}>
+            <h3 className="text-white font-semibold mb-6 text-lg">Contact</h3>
+
+            <ul className="space-y-3 text-gray-200">
+              <li className="flex items-center space-x-2">
+                <span>📧</span>
+                <span>otengebenezer326@gmail.com</span>
+              </li>
+              <li className="flex items-center space-x-2">
+                <span>📞</span>
+                <span>(+233) 593-957-373</span>
+              </li>
+              <li className="flex items-center space-x-2">
+                <span>📍</span>
+                <span>Accra, Ghana</span>
+              </li>
             </ul>
-          </motion.div> */}
-        </div>
+          </motion.div>
+        </motion.div>
 
         {/* Bottom Bar */}
         <motion.div
@@ -98,12 +119,13 @@ const Footer = () => {
           whileInView={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
           viewport={{ once: true }}
-          className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center"
+          className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0"
         >
-          <p className="text-gray-100 flex items-center">
-            © {currentYear} DocScan Pro.
+          <p className="text-gray-200 text-center md:text-left">
+            © {currentYear} DocScan Pro. All rights reserved.
           </p>
-          <p className="text-gray-400 mt-2 md:mt-0">
+
+          <p className="text-gray-300 text-center md:text-right">
             Free forever for personal use
           </p>
         </motion.div>
