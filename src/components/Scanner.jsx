@@ -262,19 +262,18 @@ const Scanner = () => {
                       onClick={handleDownload}
                       className="bg-yellow-400 text-black px-4 py-2 rounded-lg font-semibold flex items-center gap-2 shadow-md hover:bg-yellow-300 transition"
                     >
-                      <FaDownload />
                       Export {selectedFormat}
                     </motion.button>
                   )}
 
-                  <motion.button
+                  {/* <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={handleClear}
                     className="text-gray-300 hover:text-red-400 transition"
                   >
                     <FaTimesCircle size={22} />
-                  </motion.button>
+                  </motion.button> */}
                 </div>
               </motion.div>
             )}
@@ -324,7 +323,7 @@ const Scanner = () => {
                   animate={{ opacity: 1 }}
                   className="bg-gray-900/60 border border-gray-700 rounded-lg p-4 max-h-64 overflow-y-auto relative"
                 >
-                  <div className="text-gray-200 whitespace-wrap leading-relaxed text-sm">
+                  <div className="text-gray-200 whitespace-wrap mt-4 leading-relaxed text-sm">
                     {extractedText}
                   </div>
 
@@ -337,7 +336,7 @@ const Scanner = () => {
                       className="absolute top-3 right-3 text-gray-300 hover:text-yellow-400 transition"
                       title="Copy text"
                     >
-                      <FaCopy size={18} />
+                      <FaCopy size={20} />
                     </motion.button>
                   )}
                 </motion.div>
