@@ -183,7 +183,7 @@ const HowItWorksAlt = () => {
           viewport={{ once: true }}
           className="text-center mt-16"
         >
-          <motion.div
+          <motion.a href="#scanner"
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 1 }}
@@ -194,7 +194,7 @@ const HowItWorksAlt = () => {
           >
             <FaUpload />
             <span>Start Scanning Now - It's Free!</span>
-          </motion.div>
+          </motion.a>
           
           <motion.p
             initial={{ opacity: 0 }}

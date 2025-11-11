@@ -8,7 +8,10 @@ import {
   FaSpinner,
   FaCheck,
   FaTimesCircle,
+  FaCopy,
 } from "react-icons/fa";
+import { jsPDF } from "jspdf";
+import { saveAs } from "file-saver";
 
 const Scanner = () => {
   const [file, setFile] = useState(null);
@@ -16,6 +19,7 @@ const Scanner = () => {
   const [isComplete, setIsComplete] = useState(false);
   const [extractedText, setExtractedText] = useState("");
   const [selectedFormat, setSelectedFormat] = useState("TXT");
+  const [showCopyModal, setShowCopyModal] = useState(false);
   const fileInputRef = useRef(null);
 
   const API_KEY = "K88506384788957";
@@ -48,7 +52,7 @@ const Scanner = () => {
       const data = await response.json();
 
       if (data?.ParsedResults?.length > 0) {
-        setExtractedText(data.ParsedResults[0].ParsedText);
+        setExtractedText(data.ParsedResults[0].ParsedText.trim());
       } else {
         setExtractedText("⚠️ No text extracted. Try a clearer document.");
       }
@@ -61,12 +65,48 @@ const Scanner = () => {
     }
   };
 
-  const handleDownload = () => {
-    const blob = new Blob([extractedText], { type: "text/plain" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `extracted-document.${selectedFormat.toLowerCase()}`;
-    link.click();
+  const handleDownload = async () => {
+    if (!extractedText) return;
+
+    const fileName = `extracted_document.${selectedFormat.toLowerCase()}`;
+
+    switch (selectedFormat) {
+      case "PDF":
+        const pdf = new jsPDF();
+        const splitText = pdf.splitTextToSize(extractedText, 180);
+        pdf.text(splitText, 10, 10);
+        pdf.save(fileName);
+        break;
+
+      case "DOCX":
+        const blobDocx = new Blob(
+          [
+            `<!DOCTYPE html><html><body><pre>${extractedText}</pre></body></html>`,
+          ],
+          {
+            type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          }
+        );
+        saveAs(blobDocx, fileName);
+        break;
+
+      case "HTML":
+        const blobHtml = new Blob(
+          [
+            `<html><head><title>Extracted Document</title></head><body><pre>${extractedText}</pre></body></html>`,
+          ],
+          { type: "text/html;charset=utf-8" }
+        );
+        saveAs(blobHtml, fileName);
+        break;
+
+      default:
+        const blobTxt = new Blob([extractedText], {
+          type: "text/plain;charset=utf-8",
+        });
+        saveAs(blobTxt, fileName);
+        break;
+    }
   };
 
   const handleDrop = (event) => {
@@ -87,6 +127,17 @@ const Scanner = () => {
     setIsProcessing(false);
   };
 
+  const handleCopy = async () => {
+    if (!extractedText) return;
+    try {
+      await navigator.clipboard.writeText(extractedText);
+      setShowCopyModal(true);
+      setTimeout(() => setShowCopyModal(false), 2000); // hide after 2s
+    } catch (err) {
+      console.error("Failed to copy text:", err);
+    }
+  };
+
   const formats = ["PDF", "DOCX", "TXT", "HTML"];
 
   return (
@@ -94,7 +145,7 @@ const Scanner = () => {
       id="scanner"
       className="py-20 bg-gradient-to-br from-slate-900 via-gray-900 to-black relative overflow-hidden"
     >
-      {/* Subtle background gradient light */}
+      {/* Decorative gradient glow */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,215,0,0.15),_transparent_60%)] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto px-6 lg:px-10 relative z-10">
@@ -150,7 +201,9 @@ const Scanner = () => {
                     <h3 className="text-white text-xl font-semibold">
                       Upload or Drag a File
                     </h3>
-                    <p className="text-gray-400">Supported: JPG, PNG, PDF, TIFF</p>
+                    <p className="text-gray-400">
+                      Supported: JPG, PNG, PDF, TIFF
+                    </p>
                   </motion.div>
                 ) : isProcessing ? (
                   <motion.div key="processing" className="space-y-4">
@@ -167,7 +220,9 @@ const Scanner = () => {
                     <h3 className="text-white text-xl font-semibold">
                       Processing...
                     </h3>
-                    <p className="text-gray-400">AI is scanning your document</p>
+                    <p className="text-gray-400">
+                      AI is scanning your document
+                    </p>
                   </motion.div>
                 ) : (
                   <motion.div key="complete" className="space-y-4">
@@ -183,7 +238,7 @@ const Scanner = () => {
               </AnimatePresence>
             </div>
 
-            {/* File Info + Clear */}
+            {/* File Info + Clear + Export */}
             {file && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -191,11 +246,14 @@ const Scanner = () => {
                 className="mt-6 bg-white/5 border border-white/10 rounded-xl p-4 flex items-center justify-between"
               >
                 <div>
-                  <p className="text-white font-medium">{file.name}</p>
+                  <p className="text-white font-medium truncate max-w-[200px]">
+                    {file.name}
+                  </p>
                   <p className="text-gray-400 text-sm">
                     {(file.size / 1024 / 1024).toFixed(2)} MB
                   </p>
                 </div>
+
                 <div className="flex items-center gap-3">
                   {isComplete && (
                     <motion.button
@@ -204,17 +262,18 @@ const Scanner = () => {
                       onClick={handleDownload}
                       className="bg-yellow-400 text-black px-4 py-2 rounded-lg font-semibold flex items-center gap-2 shadow-md hover:bg-yellow-300 transition"
                     >
+                      <FaDownload />
                       Export {selectedFormat}
                     </motion.button>
                   )}
 
                   <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
                     onClick={handleClear}
-                    className="text-gray-300 hover:text-yellow-500 transition"
+                    className="text-gray-300 hover:text-red-400 transition"
                   >
-                    <FaTimesCircle size={24} />
+                    <FaTimesCircle size={22} />
                   </motion.button>
                 </div>
               </motion.div>
@@ -227,9 +286,11 @@ const Scanner = () => {
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-8 shadow-2xl"
+            className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-8 shadow-2xl relative"
           >
-            <h3 className="text-white text-xl font-bold mb-4">Extracted Text</h3>
+            <h3 className="text-white text-xl font-bold mb-4">
+              Extracted Text
+            </h3>
             <AnimatePresence mode="wait">
               {!file ? (
                 <motion.div
@@ -261,11 +322,24 @@ const Scanner = () => {
                   key="text"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="bg-gray-900/60 border border-gray-700 rounded-lg p-4 max-h-72 overflow-y-auto"
+                  className="bg-gray-900/60 border border-gray-700 rounded-lg p-4 max-h-64 overflow-y-auto relative"
                 >
-                  <p className="text-gray-200 whitespace-pre-wrap leading-relaxed text-sm">
+                  <div className="text-gray-200 whitespace-wrap leading-relaxed text-sm">
                     {extractedText}
-                  </p>
+                  </div>
+
+                  {/* Copy Button */}
+                  {extractedText && (
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={handleCopy}
+                      className="absolute top-3 right-3 text-gray-300 hover:text-yellow-400 transition"
+                      title="Copy text"
+                    >
+                      <FaCopy size={18} />
+                    </motion.button>
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>
@@ -300,6 +374,20 @@ const Scanner = () => {
           </motion.div>
         </div>
       </div>
+
+      {/* Copy Notification Modal */}
+      <AnimatePresence>
+        {showCopyModal && (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 30 }}
+            className="fixed bottom-6 right-6 z-40 bg-yellow-400 text-black px-5 py-3 rounded-xl shadow-xl font-semibold"
+          >
+            ✅ Text Copied!
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };
