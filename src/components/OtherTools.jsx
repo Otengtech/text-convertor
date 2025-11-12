@@ -147,15 +147,6 @@ const OtherTools = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <motion.div
-            initial={{ scale: 0 }}
-            whileInView={{ scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ type: "spring", delay: 0.2 }}
-            className="inline-flex items-center justify-center p-3 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-2xl mb-4"
-          >
-            <FaTools className="text-white text-2xl" />
-          </motion.div>
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
             Explore Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-500">Other Tools</span>
           </h2>
