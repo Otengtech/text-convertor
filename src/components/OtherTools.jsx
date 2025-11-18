@@ -17,9 +17,9 @@ const OtherTools = () => {
     },
     {
       id: 2,
-      name: "PDF Master",
-      description: "Merge, split, and compress PDF files with ease",
-      link: "#",
+      name: "Audio Remover",
+      description: "Extract audio from videos in many formats",
+      link: "https://audioremoverio.vercel.app",
       status: "coming-soon",
       icon: FaTools,
       color: "from-blue-500 to-cyan-500",
