@@ -23,7 +23,7 @@ const OtherTools = () => {
       status: "live",
       icon: FaTools,
       color: "from-blue-500 to-cyan-500",
-      badge: "Soon"
+      badge: "Popular"
     },
     {
       id: 3,
