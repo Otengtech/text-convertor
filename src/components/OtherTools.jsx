@@ -20,7 +20,7 @@ const OtherTools = () => {
       name: "Audio Remover",
       description: "Extract audio from videos in many formats",
       link: "https://audioremoverio.vercel.app",
-      status: "coming-soon",
+      status: "live",
       icon: FaTools,
       color: "from-blue-500 to-cyan-500",
       badge: "Soon"
