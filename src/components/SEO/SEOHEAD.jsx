@@ -42,7 +42,7 @@ const SEOHead = ({ activeSection = 'home' }) => {
 
   return (
     <Helmet>
-      {/* Basic Meta Tags */}
+      {/* Basic Meta Tas */}
       <title>{config.title}</title>
       <meta name="description" content={config.description} />
       <meta name="keywords" content={config.keywords || seoConfig.home.keywords} />
