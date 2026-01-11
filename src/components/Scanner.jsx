@@ -22,8 +22,9 @@ const Scanner = () => {
   const [showCopyModal, setShowCopyModal] = useState(false);
   const fileInputRef = useRef(null);
 
-  const API_KEY = "K88506384788957";
-  const OCR_SPACE_URL = "https://api.ocr.space/parse/image";
+  // Removed API_KEY and OCR_SPACE_URL for security - you should use environment variables
+  // const API_KEY = "K88506384788957";
+  // const OCR_SPACE_URL = "https://api.ocr.space/parse/image";
 
   const handleFileUpload = (event) => {
     const selectedFile = event.target.files[0];
@@ -40,12 +41,12 @@ const Scanner = () => {
 
     try {
       const formData = new FormData();
-      formData.append("apikey", API_KEY);
+      formData.append("apikey", import.meta.env.VITE_OCR_API_KEY);
       formData.append("file", file);
       formData.append("language", "eng");
       formData.append("isOverlayRequired", "false");
 
-      const response = await fetch(OCR_SPACE_URL, {
+      const response = await fetch(import.meta.env.VITE_OCR_API_URL, {
         method: "POST",
         body: formData,
       });
@@ -58,53 +59,75 @@ const Scanner = () => {
       }
     } catch (error) {
       console.error("OCR error:", error);
-      setExtractedText("❌ Error during OCR. Please try again.");
+      setExtractedText("❌ Error during text extraction. Please try again.");
     } finally {
       setIsProcessing(false);
       setIsComplete(true);
     }
   };
 
-  const handleDownload = async () => {
+  const handleDownload = () => {
     if (!extractedText) return;
 
-    const fileName = `extracted_document.${selectedFormat.toLowerCase()}`;
+    const fileName = file
+      ? `extracted_${file.name.split(".")[0]}.${selectedFormat.toLowerCase()}`
+      : `extracted_document.${selectedFormat.toLowerCase()}`;
 
     switch (selectedFormat) {
       case "PDF":
-        const pdf = new jsPDF();
-        const splitText = pdf.splitTextToSize(extractedText, 180);
-        pdf.text(splitText, 10, 10);
-        pdf.save(fileName);
+        try {
+          const pdf = new jsPDF();
+          const splitText = pdf.splitTextToSize(extractedText, 180);
+          pdf.text(splitText, 10, 10);
+          pdf.save(fileName);
+        } catch (error) {
+          console.error("PDF generation error:", error);
+          alert("Failed to generate PDF. Please try again.");
+        }
         break;
 
       case "DOCX":
-        const blobDocx = new Blob(
-          [
-            `<!DOCTYPE html><html><body><pre>${extractedText}</pre></body></html>`,
-          ],
-          {
-            type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          }
-        );
-        saveAs(blobDocx, fileName);
+        try {
+          const blobDocx = new Blob(
+            [
+              `<!DOCTYPE html><html><body><pre>${extractedText}</pre></body></html>`,
+            ],
+            {
+              type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            }
+          );
+          saveAs(blobDocx, fileName);
+        } catch (error) {
+          console.error("DOCX generation error:", error);
+          alert("Failed to generate DOCX. Please try again.");
+        }
         break;
 
       case "HTML":
-        const blobHtml = new Blob(
-          [
-            `<html><head><title>Extracted Document</title></head><body><pre>${extractedText}</pre></body></html>`,
-          ],
-          { type: "text/html;charset=utf-8" }
-        );
-        saveAs(blobHtml, fileName);
+        try {
+          const blobHtml = new Blob(
+            [
+              `<html><head><title>Extracted Document</title></head><body><pre>${extractedText}</pre></body></html>`,
+            ],
+            { type: "text/html;charset=utf-8" }
+          );
+          saveAs(blobHtml, fileName);
+        } catch (error) {
+          console.error("HTML generation error:", error);
+          alert("Failed to generate HTML. Please try again.");
+        }
         break;
 
-      default:
-        const blobTxt = new Blob([extractedText], {
-          type: "text/plain;charset=utf-8",
-        });
-        saveAs(blobTxt, fileName);
+      default: // TXT
+        try {
+          const blobTxt = new Blob([extractedText], {
+            type: "text/plain;charset=utf-8",
+          });
+          saveAs(blobTxt, fileName);
+        } catch (error) {
+          console.error("TXT generation error:", error);
+          alert("Failed to generate text file. Please try again.");
+        }
         break;
     }
   };
@@ -118,23 +141,38 @@ const Scanner = () => {
     }
   };
 
-  const handleDragOver = (event) => event.preventDefault();
+  const handleDragOver = (event) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "copy";
+  };
 
   const handleClear = () => {
-    setFile(null);
-    setExtractedText("");
-    setIsComplete(false);
-    setIsProcessing(false);
-  };
+  setFile(null);
+  setExtractedText("");
+  setIsComplete(false);
+  setIsProcessing(false);
+  if (fileInputRef.current) {
+    fileInputRef.current.value = ''; // Reset file input
+  }
+};
 
   const handleCopy = async () => {
     if (!extractedText) return;
     try {
       await navigator.clipboard.writeText(extractedText);
       setShowCopyModal(true);
-      setTimeout(() => setShowCopyModal(false), 2000); // hide after 2s
+      setTimeout(() => setShowCopyModal(false), 2000);
     } catch (err) {
       console.error("Failed to copy text:", err);
+      // Fallback for older browsers
+      const textArea = document.createElement("textarea");
+      textArea.value = extractedText;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
+      setShowCopyModal(true);
+      setTimeout(() => setShowCopyModal(false), 2000);
     }
   };
 
@@ -177,8 +215,12 @@ const Scanner = () => {
             <div
               onDrop={handleDrop}
               onDragOver={handleDragOver}
-              onClick={() => fileInputRef.current?.click()}
-              className="border-2 border-dashed border-gray-400/50 rounded-xl p-10 text-center cursor-pointer hover:border-yellow-400 transition-all"
+              onClick={() => !file && fileInputRef.current?.click()}
+              className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-all ${
+                file
+                  ? "border-green-400/50"
+                  : "border-gray-400/50 hover:border-yellow-400"
+              }`}
             >
               <input
                 type="file"
@@ -190,13 +232,7 @@ const Scanner = () => {
 
               <AnimatePresence mode="wait">
                 {!file ? (
-                  <motion.div
-                    key="upload"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="space-y-4"
-                  >
+                  <motion.div key="upload" className="space-y-4">
                     <FaUpload className="text-yellow-400 text-5xl mx-auto" />
                     <h3 className="text-white text-xl font-semibold">
                       Upload or Drag a File
@@ -209,11 +245,7 @@ const Scanner = () => {
                   <motion.div key="processing" className="space-y-4">
                     <motion.div
                       animate={{ rotate: 360 }}
-                      transition={{
-                        duration: 1,
-                        repeat: Infinity,
-                        ease: "linear",
-                      }}
+                      transition={{ duration: 1, repeat: Infinity }}
                     >
                       <FaSpinner className="text-yellow-400 text-5xl mx-auto" />
                     </motion.div>
@@ -238,6 +270,22 @@ const Scanner = () => {
               </AnimatePresence>
             </div>
 
+            {/* Clear button below upload area */}
+            {file && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-4 flex justify-center"
+              >
+                <button
+                  onClick={handleClear}
+                  className="flex items-center gap-2 px-4 py-2 bg-red-500/20 text-red-300 hover:bg-red-500/30 border border-red-500/30 rounded-lg transition-colors text-sm"
+                >
+                  <FaTimesCircle /> Clear Document
+                </button>
+              </motion.div>
+            )}
+
             {/* File Info + Clear + Export */}
             {file && (
               <motion.div
@@ -257,23 +305,21 @@ const Scanner = () => {
                 <div className="flex items-center gap-3">
                   {isComplete && (
                     <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
                       onClick={handleDownload}
-                      className="bg-yellow-400 text-black px-4 py-2 rounded-lg font-semibold flex items-center gap-2 shadow-md hover:bg-yellow-300 transition"
+                      className="bg-yellow-400 text-black px-4 py-2 rounded-lg font-semibold flex items-center gap-2 shadow-md hover:bg-yellow-300 transition text-sm"
                     >
-                      Export {selectedFormat}
+                      <FaDownload /> Export {selectedFormat}
                     </motion.button>
                   )}
 
-                  {/* <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
+                  {/* Clear button in file info area */}
+                  <button
                     onClick={handleClear}
-                    className="text-gray-300 hover:text-red-400 transition"
+                    className="text-gray-300 hover:text-red-400 transition p-2"
+                    title="Remove file"
                   >
-                    <FaTimesCircle size={22} />
-                  </motion.button> */}
+                    <FaTimesCircle size={20} />
+                  </button>
                 </div>
               </motion.div>
             )}
@@ -321,9 +367,9 @@ const Scanner = () => {
                   key="text"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="bg-gray-900/60 border border-gray-700 rounded-lg p-4 max-h-64 overflow-y-auto relative"
+                  className="bg-gray-900/60 border border-gray-700 rounded-lg p-4 max-h-64 overflow-y-auto relative min-h-[200px]"
                 >
-                  <div className="text-gray-200 whitespace-wrap mt-4 leading-relaxed text-sm">
+                  <div className="text-gray-200 whitespace-pre-wrap leading-relaxed text-sm mt-2">
                     {extractedText}
                   </div>
 
@@ -333,7 +379,7 @@ const Scanner = () => {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={handleCopy}
-                      className="absolute top-3 right-3 text-gray-300 hover:text-yellow-400 transition"
+                      className="absolute top-3 right-3 text-gray-300 hover:text-yellow-400 transition p-2"
                       title="Copy text"
                     >
                       <FaCopy size={20} />
