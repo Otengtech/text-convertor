@@ -25,10 +25,6 @@ const About = () => {
           
           {/* Visual Content - Now on LEFT */}
           <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
             className="relative order-2 lg:order-1"
           >
             <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-2xl p-1 shadow-2xl">
@@ -50,31 +46,17 @@ const About = () => {
                     {[1, 2, 3].map((item) => (
                       <motion.div
                         key={item}
-                        initial={{ opacity: 0, x: -20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        transition={{ delay: item * 0.2 }}
-                        viewport={{ once: true }}
                         className="flex items-center space-x-3 p-3 bg-gray-800 rounded-lg"
                       >
                         <motion.div
-                          animate={{ scale: [1, 1.2, 1] }}
-                          transition={{ duration: 2, repeat: Infinity, delay: item * 0.5 }}
                           className="w-2 h-2 bg-yellow-400 rounded-full"
                         />
                         <div className="flex-1 space-y-2">
                           <motion.div 
                             className="h-2 bg-gray-200 rounded-full"
-                            initial={{ width: 0 }}
-                            whileInView={{ width: "100%" }}
-                            transition={{ duration: 1, delay: item * 0.3 }}
-                            viewport={{ once: true }}
                           />
                           <motion.div 
                             className="h-2 bg-gray-200 rounded-full"
-                            initial={{ width: 0 }}
-                            whileInView={{ width: item % 2 === 0 ? "70%" : "85%" }}
-                            transition={{ duration: 1, delay: item * 0.4 }}
-                            viewport={{ once: true }}
                           />
                         </div>
                       </motion.div>
@@ -85,10 +67,6 @@ const About = () => {
                 {/* Progress Bar */}
                 <div className="bg-black/40 rounded-full h-2 overflow-hidden">
                   <motion.div
-                    initial={{ width: 0 }}
-                    whileInView={{ width: "85%" }}
-                    transition={{ duration: 2, ease: "easeOut" }}
-                    viewport={{ once: true }}
                     className="h-full bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full"
                   />
                 </div>
@@ -118,17 +96,9 @@ const About = () => {
 
           {/* Text Content - Now on RIGHT */}
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
             className="order-1 lg:order-2"
           >
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              viewport={{ once: true }}
               className="inline-flex items-center gap-2 bg-yellow-500/10 border border-yellow-400/40 rounded-full px-4 py-2 mb-6"
             >
               <FaAward className="text-yellow-500 text-sm" />
@@ -148,12 +118,7 @@ const About = () => {
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {stats.map((stat, index) => (
                 <motion.div
-                  key={stat.label}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 + index * 0.1 }}
-                  viewport={{ once: true }}
-                  whileHover={{ scale: 1.05, y: -2 }}
+                  key={index}
                   className="text-center p-4 bg-gray-900 rounded-xl transition-all"
                 >
                   <stat.icon className="text-yellow-500 text-2xl mx-auto mb-2" />

@@ -72,17 +72,9 @@ const HowItWorksAlt = () => {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          viewport={{ once: true }}
           className="text-center mb-16"
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            viewport={{ once: true }}
             className="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-6 py-3 mb-6 backdrop-blur-sm"
           >
             <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
@@ -105,32 +97,14 @@ const HowItWorksAlt = () => {
             {steps.map((step, index) => (
               <motion.div
                 key={step.title}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.15 }}
-                viewport={{ once: true }}
                 className="relative"
               >
                 {/* Step Card */}
                 <motion.div
-                  whileHover={{ 
-                    scale: 1.05, 
-                    y: -5,
-                    transition: { duration: 0.3 }
-                  }}
                   className="bg-gradient-to-br from-gray-800/50 to-gray-900/30 border border-white/10 rounded-2xl p-6 text-center backdrop-blur-sm hover:border-white/20 transition-all duration-300"
                 >
                   {/* Step Number */}
                   <motion.div
-                    initial={{ scale: 0 }}
-                    whileInView={{ scale: 1 }}
-                    transition={{ 
-                      duration: 0.5, 
-                      delay: index * 0.2,
-                      type: "spring",
-                      stiffness: 200
-                    }}
-                    viewport={{ once: true }}
                     className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center mx-auto mb-4 -mt-12 relative z-10 shadow-lg"
                   >
                     <span className="text-black font-bold text-lg">{index + 1}</span>
@@ -138,8 +112,6 @@ const HowItWorksAlt = () => {
 
                   {/* Icon */}
                   <motion.div
-                    whileHover={{ scale: 1.2, rotate: 360 }}
-                    transition={{ duration: 0.5 }}
                     className={`w-16 h-16 bg-gradient-to-r ${step.color} rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg`}
                   >
                     <step.icon className="text-white text-2xl" />
@@ -158,8 +130,6 @@ const HowItWorksAlt = () => {
                   {index < steps.length - 1 && (
                     <div className="hidden lg:block absolute top-1/2 -right-4 transform -translate-y-1/2">
                       <motion.div
-                        animate={{ x: [0, 5, 0] }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                         className="text-yellow-400/60"
                       >
                         <FaArrowRight />
@@ -177,30 +147,17 @@ const HowItWorksAlt = () => {
 
         {/* CTA Section */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
-          viewport={{ once: true }}
           className="text-center mt-16"
         >
           <motion.a href="#scanner"
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 1 }}
-            viewport={{ once: true }}
             className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black px-8 py-4 rounded-full font-bold text-lg inline-flex items-center gap-3 cursor-pointer shadow-2xl hover:shadow-yellow-500/25 transition-all duration-300"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            
           >
             <FaUpload />
             <span>Start Scanning Now - It's Free!</span>
           </motion.a>
           
           <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 1.2 }}
-            viewport={{ once: true }}
             className="text-gray-400 mt-4 text-sm"
           >
             No credit card required • Process up to 10 documents free
